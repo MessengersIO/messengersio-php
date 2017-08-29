@@ -1,0 +1,20 @@
+{
+    "name": "messengersio/php-client",
+    "homepage": "https://github.com/MessengersIO/messengersio-php",
+    "type": "library",
+    "license": "GNU 3.0",
+    "authors": [
+        {
+            "name": "Nathanaël Khodl",
+            "email": "nkhodl@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MessengersIO\\": "lib"
+        }
+    },
+    "require": {
+        "php": ">=7.0.0"
+    }
+}
