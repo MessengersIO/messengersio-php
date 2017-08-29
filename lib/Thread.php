@@ -18,7 +18,7 @@ final class Thread {
 		$this->state = $state;
 	}
 
-	public function reply(Message $message){
+	public function send(Message $message){
 		return $this->app->sendMessage($this, $message);
 	}
 
