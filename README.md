@@ -3,7 +3,7 @@
 
 Create client
 -------------
-```
+```php
 $apiKey = "YOUR MESSENGERS.IO KEY";
 $client = new \MessengersIO\App($apiKey);
 ```
