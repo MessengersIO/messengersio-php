@@ -78,10 +78,10 @@ $app->state('INTRO', function(Thread $thread, Message $message){
 	// Vérification du changement d'état
 	if($message instanceof CallbackMessage){
 		if($message->getValue() === "TEAMS"){
-			$thread->moveToState("TEAMS")->loadNextState()->send(new TextMessage("Moving to teams"));
+			$thread->moveAndLoadState("TEAMS")->send(new TextMessage("Moving to teams"));
 			return; // Interruption
 		}elseif($message->getValue() === "EXAMPLES"){
-			$thread->moveToState("EXAMPLES")->loadNextState()->send(new TextMessage("Moving to examples"));
+			$thread->moveAndLoadState("EXAMPLES")->send(new TextMessage("Moving to examples"));
 			return; // Interruption
 		}
 	}

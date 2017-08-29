@@ -28,6 +28,12 @@ final class Thread {
 		return $this->state;
 	}
 
+	public function moveAndLoadState($stateName){
+		$this->moveToState($stateName);
+		$this->loadNextState();
+		return $this;
+	}
+
 	public function moveToState($stateName){
 		$this->state = $stateName;
 		return $this;
