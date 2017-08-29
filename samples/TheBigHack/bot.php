@@ -78,10 +78,10 @@ $app->state('INTRO', function(Thread $thread, Message $message){
 	// Vérification du changement d'état
 	if($message instanceof CallbackMessage){
 		if($message->getValue() === "TEAMS"){
-			$thread->send(new TextMessage("Moving to teams"));
+			$thread->moveToState("TEAMS")->loadNextState()->send(new TextMessage("Moving to teams"));
 			return; // Interruption
 		}elseif($message->getValue() === "EXAMPLES"){
-			$thread->send(new TextMessage("Moving to examples"));
+			$thread->moveToState("EXAMPLES")->loadNextState()->send(new TextMessage("Moving to examples"));
 			return; // Interruption
 		}
 	}
@@ -113,7 +113,7 @@ $app->state('EXEMPLES', function(Thread $thread, Message $message){
 	// A améliorer
 	$thread
 		->moveToState("WELCOME")
-		->send(new TextMessage("Rien pour le moment. Retour à la case départ"));
+		->send(new TextMessage("EXEMPLES: Rien pour le moment. Retour à la case départ"));
 
 });
 
@@ -126,14 +126,21 @@ $app->state('EXEMPLES', function(Thread $thread, Message $message){
  */
 $app->state('TEAMS', function(Thread $thread, Message $message){
 
+	if($message->isTreated())
+		$thread->send(new TextMessage("This message is already treated in another state"));
+
 	// A améliorer
 	$thread
 		->moveToState("WELCOME")
-		->send(new TextMessage("Rien pour le moment. Retour à la case départ"));
+		->send(new TextMessage("TEAMS: Rien pour le moment. Retour à la case départ"));
 
 });
 
 
 // Récupération de la requête
-$app->run();
+$result = $app->run();
+
+
+// Show result
+var_dump($result);
 

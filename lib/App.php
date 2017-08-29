@@ -15,6 +15,8 @@ final class App {
 	private $defaultStateName;
 	private $states = [];
 
+	private $loops = 0;
+
 	function __construct($apiKey){
 		$this->apiKey = $apiKey;
 	}
@@ -37,9 +39,20 @@ final class App {
 		if(! $threadId) return false;
 
 		$supported = $data['bot']['support'] ?? [];
-		//$currentState = $data['user']['state'] ?? null;
 		$currentState = $_GET['state'] ?? null;
 		$thread = new Thread($threadId, $this, $currentState, $supported);
+
+		$message = $this->treatContent($thread, $data['content']);
+
+		return $this->loadCurrentState($thread, $message);
+
+	}
+
+	private function loadCurrentState(Thread $thread, Message $message){
+
+		$this->loops++;
+		if($this->loops > 10)
+			throw new \BadMethodCallException("Too many loads of state in one conversation");
 
 		$stateName = $thread->getCurrentState();
 		if(! $stateName or ! isset($this->states[$stateName]))
@@ -49,9 +62,16 @@ final class App {
 		if(! is_callable($method))
 			return false;
 
-		$message = $this->treatContent($thread, $data['content']);
+		$result = $method($thread, $message);
 
-		return $method($thread, $message);
+		$message->setTreated(true);
+
+		if($thread->getLoadNextState()){
+			$thread->loadNextState(false);
+			$result = $this->loadCurrentState($thread, $message);
+		}
+
+		return $result;
 
 	}
 

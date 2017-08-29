@@ -6,6 +6,8 @@ abstract class Message {
 
 	private $keyboard = [[]];
 
+	private $treated = false;
+
 	abstract function getData();
 	abstract function getType();
 
@@ -21,6 +23,14 @@ abstract class Message {
 		return [
 			'buttons' => $this->keyboard
 		];
+	}
+
+	public function setTreated($treated=true){
+		$this->treated = $treated;
+	}
+
+	public function isTreated(){
+		return $this->treated;
 	}
 
 }
