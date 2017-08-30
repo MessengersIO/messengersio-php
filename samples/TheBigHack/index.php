@@ -6,9 +6,12 @@
 file_put_contents("last-message.json", json_encode($_GET)."\n\n".file_get_contents("php://input"));
 include(__DIR__."/../../vendor/autoload.php");
 use MessengersIO\App;
+use MessengersIO\Component\Element;
 use MessengersIO\Message\Button;
 use MessengersIO\Message\CallbackMessage;
+use MessengersIO\Message\GalleryMessage;
 use MessengersIO\Message\ImageMessage;
+use MessengersIO\Message\ListMessage;
 use MessengersIO\Message\LocationMessage;
 use MessengersIO\Message\Message;
 use MessengersIO\Message\TextMessage;
@@ -90,8 +93,6 @@ $app->state('INTRO', function(Thread $thread, Message $message){
 	$thread->send(new TextMessage("Vous êtes ici:"));
 	$thread->send(new LocationMessage(46.1912586,6.1303793));
 
-	// Attente de 3 secondes
-	sleep(3);
 
 	// Envoi d'une suggestion de suite (traité ci-dessus)
 	$answer = new TextMessage("Que souhaites-tu faire?");
@@ -110,44 +111,120 @@ $app->state('INTRO', function(Thread $thread, Message $message){
  */
 $app->state('EXAMPLES', function(Thread $thread, Message $message){
 
+	// Vérification du changement d'état, si ça n'a pas été traité avant
+	if($message instanceof CallbackMessage and ! $message->isTreated()){
+		if($message->getValue() === "CAROUSEL"){
+			$thread->moveAndLoadState("EXAMPLE_CAROUSEL");
+			return; // Interruption
+		}elseif($message->getValue() === "LIST"){
+			$thread->moveAndLoadState("EXAMPLE_LIST");
+			return; // Interruption
+		}elseif($message->getValue() === "DATA"){
+			$thread->moveAndLoadState("EXAMPLE_DATA");
+			return; // Interruption
+		}
+	}
 
-	// Obtention des données associées au thread
-	$data = $thread->getData() ?? [];
-	// Obtention du paramètre "cpt" ou initialisation
-	$data['cpt'] = $data['cpt'] ?? 0;
-	// Incrément
-	$data['cpt']++ ;
-	// Sauvegarde des nouvelles données
-	$thread->setData($data);
+	// On affiche les possibilités
+	$message = new TextMessage("Quel exemple voulez-vous afficher ?");
 
+	$message->addButton(new Button("Une galerie", "CAROUSEL"));
+	$message->addButton(new Button("Une liste", "LIST"));
+	$message->addButton(new Button("Persistence", "DATA"));
 
-	// A améliorer
-	$thread
-		->moveToState("WELCOME")
-		// ->moveToState("WELCOME", $data) // Autre méthode pour économiser du temps
-		->send(new TextMessage("EXEMPLES: Rien pour le moment. Retour à la case départ"));
-	$thread->send(new TextMessage("data: ".json_encode($thread->getData())));
+	$thread->send($message);
 
 });
 
 
 /*
- * ETAT: TEAMS
- *
- * Présentation du
- * Puis lançons automatiquement
+ * ETAT: EXAMPLE_CAROUSEL
  */
-$app->state('TEAMS', function(Thread $thread, Message $message){
+$app->state('EXAMPLE_CAROUSEL', function(Thread $thread, Message $message){
 
-	if($message->isTreated())
-		$thread->send(new TextMessage("This message is already treated in another state"));
+	$gallery = new GalleryMessage();
 
-	// A améliorer
-	$thread
-		->moveAndLoadState("WELCOME")
-		->send(new TextMessage("TEAMS: Rien pour le moment. Retour à la case départ sans attendre"));
+	$image1 = new Element("Titre A");
+	$image1->setText("Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A");
+	$image1->setImage("http://placehold.it/300x200?text=Image%20A");
+
+	$image2 = new Element("Titre B");
+	$image2->setText("Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B");
+	$image2->setImage("http://placehold.it/300x200?text=Image%20B");
+
+	$gallery->addElement($image1);
+	$gallery->addElement($image2);
+
+	$thread->send($gallery);
+
+	// Pause de 3 secondes puis redirection à l'index
+	sleep(3);
+	$thread->moveAndLoadState('EXAMPLES');
 
 });
+
+
+/*
+ * ETAT: EXAMPLE_LIST
+ */
+$app->state('EXAMPLE_LIST', function(Thread $thread, Message $message){
+
+
+	$list = new ListMessage();
+
+	for($i = 1; $i <= 4 ; $i++){
+		$image = new Element("Titre $i");
+		$image->setText("Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i");
+		$image->setImage("http://placehold.it/300x200?text=Image%20$i");
+
+		$list->addElement($image);
+	}
+
+	$thread->send($list);
+
+	// Pause de 3 secondes puis redirection à l'index
+	sleep(3);
+	$thread->moveAndLoadState('EXAMPLES');
+
+});
+
+
+
+/*
+ * ETAT: EXAMPLE_DATA
+ */
+$app->state('EXAMPLE_DATA', function(Thread $thread, Message $message){
+
+	// Obtention des données associées au thread
+	if($message->isTreated()){ 	// Si on entre dans l'état (message traité ailleurs)
+		$cpt = 0;
+	}else{ // Sinon on récupère les données déjà stockées
+		$cpt = $thread->getData();
+	}
+
+	// Vérification du changement d'état, si ça n'a pas été traité avant
+	if($message instanceof CallbackMessage and ! $message->isTreated()){
+		if($message->getValue() === "DONE"){
+			$thread->send(new TextMessage("Compteur final: $cpt"));
+			$thread->moveAndLoadState("EXAMPLES");
+			return; // Interruption
+		}
+	}
+
+	// On incrémente
+	$cpt++ ;
+
+	// On sauvegarde la nouvelle donnée
+	$thread->setData($cpt);
+
+	// Envoi du résultat
+	$message = new TextMessage("Compteur actuel: $cpt");
+	$message->addButton(new Button("Plus!"));
+	$message->addButton(new Button("Fini...","DONE"));
+	$thread->send($message);
+
+});
+
 
 
 // Récupération de la requête
