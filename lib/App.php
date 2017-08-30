@@ -40,7 +40,9 @@ final class App {
 
 		$supported = $data['bot']['support'] ?? [];
 		$currentState = $_GET['state'] ?? null;
-		$thread = new Thread($threadId, $this, $currentState, $supported);
+		$threadData = @json_decode($_GET['data']) ?? false;
+		$thread = new Thread($threadId, $this, $supported);
+		$thread->moveToState($currentState, $threadData);
 
 		$message = $this->treatContent($thread, $data['content']);
 
@@ -93,7 +95,7 @@ final class App {
 	public function sendMessage(Thread $thread, Message $message){
 		$data = $message->getData();
 		if($thread->getCurrentState())
-			$data['path'] = '/?state='.$thread->getCurrentState();
+			$data['path'] = '/?state='.$thread->getCurrentState().'&data='.json_encode($thread->getData());
 
 		$data['keyboard'] = $message->getKeyboard();
 

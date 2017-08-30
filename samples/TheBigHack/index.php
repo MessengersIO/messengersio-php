@@ -91,7 +91,7 @@ $app->state('INTRO', function(Thread $thread, Message $message){
 	$thread->send(new LocationMessage(46.1912586,6.1303793));
 
 	// Attente de 3 secondes
-	sleep(5);
+	sleep(3);
 
 	// Envoi d'une suggestion de suite (traité ci-dessus)
 	$answer = new TextMessage("Que souhaites-tu faire?");
@@ -106,14 +106,27 @@ $app->state('INTRO', function(Thread $thread, Message $message){
 
 
 /*
- * ETAT: EXEMPLES
+ * ETAT: EXAMPLES
  */
-$app->state('EXEMPLES', function(Thread $thread, Message $message){
+$app->state('EXAMPLES', function(Thread $thread, Message $message){
+
+
+	// Obtention des données associées au thread
+	$data = $thread->getData() ?? [];
+	// Obtention du paramètre "cpt" ou initialisation
+	$data['cpt'] = $data['cpt'] ?? 0;
+	// Incrément
+	$data['cpt']++ ;
+	// Sauvegarde des nouvelles données
+	$thread->setData($data);
+
 
 	// A améliorer
 	$thread
 		->moveToState("WELCOME")
+		// ->moveToState("WELCOME", $data) // Autre méthode pour économiser du temps
 		->send(new TextMessage("EXEMPLES: Rien pour le moment. Retour à la case départ"));
+	$thread->send(new TextMessage("data: ".json_encode($thread->getData())));
 
 });
 
@@ -131,8 +144,8 @@ $app->state('TEAMS', function(Thread $thread, Message $message){
 
 	// A améliorer
 	$thread
-		->moveToState("WELCOME")
-		->send(new TextMessage("TEAMS: Rien pour le moment. Retour à la case départ"));
+		->moveAndLoadState("WELCOME")
+		->send(new TextMessage("TEAMS: Rien pour le moment. Retour à la case départ sans attendre"));
 
 });
 

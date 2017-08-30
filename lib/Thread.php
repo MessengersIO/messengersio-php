@@ -10,13 +10,13 @@ final class Thread {
 	private $supported;
 	private $app;
 	private $state;
+	private $data;
 	private $mustLoadNextState;
 
-	function __construct($threadId, App $app, $state=null, $supported=[]){
+	function __construct($threadId, App $app, $supported=[]){
 		$this->id = $threadId;
 		$this->app = $app;
 		$this->supported = $supported;
-		$this->state = $state;
 		$this->loadNextState(false);
 	}
 
@@ -28,15 +28,25 @@ final class Thread {
 		return $this->state;
 	}
 
-	public function moveAndLoadState($stateName){
-		$this->moveToState($stateName);
+	public function getData(){
+		return $this->data;
+	}
+
+	public function moveAndLoadState($stateName, $data=null){
+		$this->moveToState($stateName, $data);
 		$this->loadNextState();
 		return $this;
 	}
 
-	public function moveToState($stateName){
+	public function moveToState($stateName, $data=null){
 		$this->state = $stateName;
+		$this->setData($data);
 		return $this;
+	}
+
+	public function setData($data){
+		if(! is_null($data))
+			$this->data = $data;
 	}
 
 	public function loadNextState($mustLoad=true){
