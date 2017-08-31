@@ -122,6 +122,9 @@ $app->state('EXAMPLES', function(Thread $thread, Message $message){
 		}elseif($message->getValue() === "DATA"){
 			$thread->moveAndLoadState("EXAMPLE_DATA");
 			return; // Interruption
+		}elseif($message->getValue() === "NLP"){
+			$thread->moveAndLoadState("EXAMPLE_NLP");
+			return; // Interruption
 		}
 	}
 
@@ -131,6 +134,7 @@ $app->state('EXAMPLES', function(Thread $thread, Message $message){
 	$message->addButton(new Button("Une galerie", "CAROUSEL"));
 	$message->addButton(new Button("Une liste", "LIST"));
 	$message->addButton(new Button("Persistence", "DATA"));
+	$message->addButton(new Button("Langage naturel", "NLP"));
 
 	$thread->send($message);
 
@@ -221,6 +225,48 @@ $app->state('EXAMPLE_DATA', function(Thread $thread, Message $message){
 	$message = new TextMessage("Compteur actuel: $cpt");
 	$message->addButton(new Button("Plus!"));
 	$message->addButton(new Button("Fini...","DONE"));
+	$thread->send($message);
+
+});
+
+
+
+/*
+ * ETAT: EXAMPLE_NLP
+ */
+$app->state('EXAMPLE_NLP', function(Thread $thread, Message $message){
+
+
+	/*
+	 * Important: vous devez avoir associé ces données à un compte API.ai
+	 * Contactez le TechBar pour la mettre en place
+	 * */
+
+
+	// Vérification du changement d'état, si ça n'a pas été traité avant
+	if($message instanceof CallbackMessage and ! $message->isTreated()){
+		if($message->getValue() === "DONE"){
+			$thread->moveAndLoadState("EXAMPLES");
+			return; // Interruption
+		}
+	}
+
+
+	if(! $message->isTreated()){
+		if($data = $message->getApiAi() and isset($data['result'])){
+			foreach($data['result'] as $k => $value){
+				$thread->send(new TextMessage("$k :\n".json_encode($value, JSON_PRETTY_PRINT)));
+			}
+		}else{
+			$thread->send(new TextMessage("Aucune donnée retournée par API.ai"));
+		}
+		sleep(2);
+	}
+
+
+	// Envoi du résultat
+	$message = new TextMessage("Entrez un texte pour le parser:");
+	$message->addButton(new Button("Fini de jouer","DONE"));
 	$thread->send($message);
 
 });
