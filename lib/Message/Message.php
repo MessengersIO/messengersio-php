@@ -8,6 +8,8 @@ abstract class Message {
 
 	private $treated = false;
 
+	private $apiAi = false;
+
 	abstract function getData();
 	abstract function getType();
 
@@ -27,6 +29,15 @@ abstract class Message {
 
 	public function setTreated($treated=true){
 		$this->treated = $treated;
+	}
+
+	public function setApiAi($data=false){
+		$this->apiAi = $data;
+		return $this;
+	}
+
+	public function getApiAi(){
+		return $this->apiAi;
 	}
 
 	public function isTreated(){

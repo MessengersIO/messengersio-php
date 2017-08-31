@@ -45,6 +45,8 @@ final class App {
 		$thread->moveToState($currentState, $threadData);
 
 		$message = $this->treatContent($thread, $data['content']);
+		if(isset($data['content'], $data['content']['api_ai']))
+			$message->setApiAi($data['content']['api_ai']);
 
 		return $this->loadCurrentState($thread, $message);
 
