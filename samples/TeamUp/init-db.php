@@ -1,7 +1,7 @@
 <?php
 
 $numberOfTeams = isset($_GET['teams']) ? $_GET['teams'] : 4;
-$teamNames = ['Ketchup', 'Mayo', 'Moutarde', 'Curry', 'Guacamole', 'Safran', 'Cannelle'];
+$teamNames = ['Ketchup', 'Mayo', 'Moutarde', 'Curry', 'Guacamole', 'Safran', 'Cannelle', 'Samourai'];
 $teamImages = [
   'http://www.farwestchina.com/wp-content/uploads/2011/08/ketchup.jpg',
   'http://www.oporto.co.nz/wp-content/uploads/2015/09/sauce_mayonnaise.102271.png',
@@ -9,7 +9,8 @@ $teamImages = [
   'http://www.terredepices.com/35-101-large/curry-indien.jpg',
   'https://d5bzqyuki558t.cloudfront.net/cms-assets/system/asset_versions/attachments/000/000/221/original/_0016_Guac.png?1428411972',
   'http://www.fruitsec-safran.com/wp-content/uploads/2013/04/safran-filament.jpg',
-  'http://ileauxepices.com/60-large/cannelle.jpg'
+  'http://ileauxepices.com/60-large/cannelle.jpg',
+  'http://www.koshary.be/wp-content/uploads/2016/05/106-600x500.png'
 ];
 
 $dbname = 'teamup.db';
