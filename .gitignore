@@ -2,3 +2,5 @@
 conf.json
 /vendor/
 composer.lock
+*/**/last-message.json
+*/**/*.db

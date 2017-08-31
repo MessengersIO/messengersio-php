@@ -10,7 +10,7 @@ $teamImages = [
   'https://d5bzqyuki558t.cloudfront.net/cms-assets/system/asset_versions/attachments/000/000/221/original/_0016_Guac.png?1428411972',
   'http://www.fruitsec-safran.com/wp-content/uploads/2013/04/safran-filament.jpg',
   'http://ileauxepices.com/60-large/cannelle.jpg'
-]
+];
 
 $dbname = 'teamup.db';
 if(!class_exists('SQLite3'))
@@ -39,6 +39,7 @@ $query = "CREATE TABLE members (
   team INTEGER,
   FOREIGN KEY(team) REFERENCES teams(ID)
 )";
+$result = $db->exec($query);
 echo "Table 'members' créée<br>";
 
 for ($i = 0; $i < $numberOfTeams; $i++) {
