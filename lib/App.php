@@ -101,7 +101,7 @@ final class App {
 	public function sendMessage(Thread $thread, Message $message){
 		$data = $message->getData();
 		if($thread->getCurrentState())
-			$data['path'] = '/?state='.$thread->getCurrentState().'&data='.json_encode($thread->getData());
+			$data['path'] = '/?state='.urlencode($thread->getCurrentState()).'&data='.urlencode(json_encode($thread->getData()));
 
 		$data['keyboard'] = $message->getKeyboard();
 
