@@ -128,6 +128,10 @@ $app->state('EXAMPLES', function(Thread $thread, Message $message){
 		}
 	}
 
+	if($message instanceof LocationMessage) {
+		$thread->send(new LocationMessage($message->getLatitude(), $message->getLongitude()));
+	}
+
 	// On affiche les possibilités
 	$message = new TextMessage("Quel exemple voulez-vous afficher ?");
 
@@ -288,4 +292,3 @@ $result = $app->run();
 
 // Show result
 var_dump($result);
-

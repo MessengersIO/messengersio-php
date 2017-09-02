@@ -10,8 +10,7 @@ use MessengersIO\Message\LocationMessage;
 
 final class App {
 
-	// const base = "https://api.messengers.io";
-	const base = "http://172.17.0.1:5000";
+	const base = "https://api.messengers.io";
 
 	private $apiKey;
 	private $defaultStateName;
