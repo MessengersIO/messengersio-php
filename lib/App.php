@@ -89,7 +89,7 @@ final class App {
 			return new ImageMessage($content['image']);
 
 		if(isset($content['location']))
-			return new LocationMessage($content['location']);
+			return new LocationMessage($content['location']['latitude'], $content['location']['longitude']);
 
 		if(isset($content['callback']))
 			return new CallbackMessage($content['callback']);

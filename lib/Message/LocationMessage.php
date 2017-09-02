@@ -7,9 +7,9 @@ class LocationMessage extends Message {
 	private $latitude;
 	private $longitude;
 
-	function __construct($location){
-		$this->latitude = $location['latitude'];
-		$this->longitude = $location['longitude'];
+	function __construct($latitude, $longitude){
+		$this->latitude = $latitude;
+		$this->longitude = $longitude;
 	}
 
 	function getLatitude(){
