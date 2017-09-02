@@ -3,7 +3,7 @@
 /*///////////////////////////////////////////////////////////
 // NE PAS TOUCHER
 ///////////////////////////////////////////////////////////*/
-file_put_contents("last-message.json", json_encode($_GET)."\n\n".file_get_contents("php://input"));
+file_put_contents("last-message.json", date('r')."\n\n".json_encode($_GET)."\n\n".file_get_contents("php://input"));
 include(__DIR__."/../../vendor/autoload.php");
 use MessengersIO\App;
 use MessengersIO\Component\Element;
@@ -135,6 +135,7 @@ $app->state('EXAMPLES', function(Thread $thread, Message $message){
 	$message->addButton(new Button("Une liste", "LIST"));
 	$message->addButton(new Button("Persistence", "DATA"));
 	$message->addButton(new Button("Langage naturel", "NLP"));
+	$message->addButton(new Button('$LOCATION'));
 
 	$thread->send($message);
 
@@ -152,9 +153,15 @@ $app->state('EXAMPLE_CAROUSEL', function(Thread $thread, Message $message){
 	$image1->setText("Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A Contenu A");
 	$image1->setImage("http://placehold.it/300x200?text=Image%20A");
 
+	$image1->addButton(new Button("Test 1","COOL"));
+	$image1->addButton(new Button("Test 2","COOL"));
+	$image1->addButton(new Button("Test 3","COOL"));
+
 	$image2 = new Element("Titre B");
 	$image2->setText("Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B Contenu B");
 	$image2->setImage("http://placehold.it/300x200?text=Image%20B");
+
+	$image2->addButton(new Button("Test 1","COOL"));
 
 	$gallery->addElement($image1);
 	$gallery->addElement($image2);
@@ -173,13 +180,15 @@ $app->state('EXAMPLE_CAROUSEL', function(Thread $thread, Message $message){
  */
 $app->state('EXAMPLE_LIST', function(Thread $thread, Message $message){
 
-
 	$list = new ListMessage();
 
 	for($i = 1; $i <= 4 ; $i++){
 		$image = new Element("Titre $i");
 		$image->setText("Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i Contenu $i");
 		$image->setImage("http://placehold.it/300x200?text=Image%20$i");
+
+		if($i%2)
+			$image->addButton(new Button("Test","COOL"));
 
 		$list->addElement($image);
 	}
@@ -255,7 +264,7 @@ $app->state('EXAMPLE_NLP', function(Thread $thread, Message $message){
 	if(! $message->isTreated()){
 		if($data = $message->getApiAi() and isset($data['result'])){
 			foreach($data['result'] as $k => $value){
-				$thread->send(new TextMessage("$k :\n".json_encode($value, JSON_PRETTY_PRINT)));
+				$thread->send(new TextMessage("$k :\n".json_encode($value, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE)));
 			}
 		}else{
 			$thread->send(new TextMessage("Aucune donnée retournée par API.ai"));
