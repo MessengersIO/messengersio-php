@@ -6,10 +6,12 @@ use MessengersIO\Message\CallbackMessage;
 use MessengersIO\Message\Message;
 use MessengersIO\Message\TextMessage;
 use MessengersIO\Message\ImageMessage;
+use MessengersIO\Message\LocationMessage;
 
 final class App {
 
-	const base = "https://api.messengers.io";
+	// const base = "https://api.messengers.io";
+	const base = "http://172.17.0.1:5000";
 
 	private $apiKey;
 	private $defaultStateName;
@@ -85,6 +87,9 @@ final class App {
 
 		if(isset($content['image']))
 			return new ImageMessage($content['image']);
+
+		if(isset($content['location']))
+			return new LocationMessage($content['location']);
 
 		if(isset($content['callback']))
 			return new CallbackMessage($content['callback']);
